@@ -1,8 +1,13 @@
 import { MongoClient, ObjectId } from "mongodb"
+import Head from "next/head"
 import MeetupDetail from "../../components/meetups/MeetupDetail"
 
 function DetailsPage(props) {
     return <>
+        <Head>
+            <title>{props.meetUpData.title}</title>
+            <meta name="description" content={props.meetUpData.description} />
+        </Head>
         <MeetupDetail
             image={props.meetUpData.image}
             title={props.meetUpData.title}

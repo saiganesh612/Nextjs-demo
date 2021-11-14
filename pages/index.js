@@ -1,8 +1,17 @@
 import { MongoClient } from 'mongodb'
+import Head from "next/head"
 import MeetupList from "../components/meetups/MeetupList"
 
 function HomePage(props) {
-    return <MeetupList meetups={props.meetups} />
+    return (
+        <>
+            <Head>
+                <title>Next Meetups</title>
+                <meta name="description" content="This is for Next developers meetup." />
+            </Head>
+            <MeetupList meetups={props.meetups} />
+        </>
+    )
 }
 
 // This function will run one each and every request

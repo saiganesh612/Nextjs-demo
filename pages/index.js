@@ -28,6 +28,21 @@ function HomePage(props) {
     return <MeetupList meetups={props.meetups} />
 }
 
+// This function will run one each and every request
+// export async function getServerSideProps(context) {
+//     const req = context.req
+//     const res = context.res
+
+//     // Fetch data from API
+//     // Securely connect with DataBase
+
+//     return {
+//         props: {
+//             meetups: dummyData
+//         }
+//     }
+// }
+
 // This function will run only in Build process
 export async function getStaticProps() {
     // Fetch data from API

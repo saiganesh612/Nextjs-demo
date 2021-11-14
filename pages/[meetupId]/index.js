@@ -1,50 +1,53 @@
+import { MongoClient, ObjectId } from "mongodb"
 import MeetupDetail from "../../components/meetups/MeetupDetail"
 
 function DetailsPage(props) {
     return <>
         <MeetupDetail
-            image="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80"
-            title="The First Meetup"
-            address="Some Address"
-            description="Meetup description"
+            image={props.meetUpData.image}
+            title={props.meetUpData.title}
+            address={props.meetUpData.address}
+            description={props.meetUpData.description}
         />
     </>
 }
 
 export async function getStaticPaths() {
+    const client = await MongoClient.connect('mongodb+srv://Nextjs:BJZgA6YSettS6xE7@cluster0.awmux.mongodb.net/NextjsDemo?retryWrites=true&w=majority')
+    const db = client.db()
+
+    const MeetupsCollection = db.collection('meetups')
+    const meetups = await MeetupsCollection.find({}, { _id: 1 }).toArray()
+    client.close()
+
     return {
         fallback: false,
-        paths: [
-            {
-                params: {
-                    meetupId: 'm1'
-                }
-            },
-            {
-                params: {
-                    meetupId: 'm2'
-                }
-            },
-            {
-                params: {
-                    meetupId: 'm3'
-                }
+        paths: meetups.map(meetup => ({
+            params: {
+                meetupId: meetup._id.toString()
             }
-        ]
+        }))
     }
 }
 
 export async function getStaticProps(context) {
     const MeetupId = context.params.meetupId
-    console.log(MeetupId)
+
+    const client = await MongoClient.connect('mongodb+srv://Nextjs:BJZgA6YSettS6xE7@cluster0.awmux.mongodb.net/NextjsDemo?retryWrites=true&w=majority')
+    const db = client.db()
+
+    const MeetupsCollection = db.collection('meetups')
+    const meetup = await MeetupsCollection.findOne({ _id: ObjectId(MeetupId) })
+    client.close()
 
     return {
         props: {
             meetUpData: {
-                image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80",
-                title: "The First Meetup",
-                address: "Some Address",
-                description: "Meetup description"
+                id: meetup._id.toString(),
+                image: meetup.image,
+                title: meetup.title,
+                address: meetup.address,
+                description: meetup.description
             }
         }
     }

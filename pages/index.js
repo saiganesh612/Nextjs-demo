@@ -1,28 +1,5 @@
+import { MongoClient } from 'mongodb'
 import MeetupList from "../components/meetups/MeetupList"
-
-const dummyData = [
-    {
-        id: 'm1',
-        title: 'First meetup',
-        image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80',
-        address: 'Some address',
-        description: 'This is first meetup'
-    },
-    {
-        id: 'm2',
-        title: 'Second meetup',
-        image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80',
-        address: 'Some address',
-        description: 'This is second meetup'
-    },
-    {
-        id: 'm3',
-        title: 'Third meetup',
-        image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1051&q=80',
-        address: 'Some address',
-        description: 'This is third meetup'
-    }
-]
 
 function HomePage(props) {
     return <MeetupList meetups={props.meetups} />
@@ -48,9 +25,21 @@ export async function getStaticProps() {
     // Fetch data from API
     // Securely connect with DataBase
 
+    const client = await MongoClient.connect('mongodb+srv://Nextjs:BJZgA6YSettS6xE7@cluster0.awmux.mongodb.net/NextjsDemo?retryWrites=true&w=majority')
+    const db = client.db()
+
+    const MeetupsCollection = db.collection('meetups')
+    const meetups = await MeetupsCollection.find().toArray()
+    client.close()
+
     return {
         props: {
-            meetups: dummyData
+            meetups: meetups.map(meetup => ({
+                title: meetup.title,
+                image: meetup.image,
+                address: meetup.address,
+                id: meetup._id.toString()
+            }))
         },
         revalidate: 60  //Updates content for every 1min on server side 
     }
